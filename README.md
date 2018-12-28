@@ -11,38 +11,25 @@ Mapping the ports alone is likely not sufficient for proper discovery as the pro
 
 ## Quick Start
 
-### Build
-
-This image is not (yet) pushed to any docker repository.
-It has to be built from this repo.
-
-```shell
-git clone https://github.com/twatzl/samba-alpine-docker.git
-cd samba-alpine-docker
-docker build -t samba-alpine-1.1.0 .
-```
-
-If you have time to maintain it, feel free to do so.
-
 ### Run
 
 First copy the content of the **config** directory into the config directory you will use.
 
 Quick start for the impatient (discovery on your network will work fine). With your own smb.conf and supervisord.conf configs:
 ```shell
-docker create --network host -v /path/to/configs/:/config -v /path/to/share/:/shared --name samba samba-alpine:1.1.0
+docker create --network host -v /path/to/configs/:/config -v /path/to/share/:/shared --name samba twatzl/samba-alpine
 docker start samba
 ```
 
 Supplying port mappings only instead of --network=host might be subject to the limtations outlined above
 ```shell
-docker run -d -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 -v /path/to/configs/:/config -v /path/to/share/:/shared --name samba samba-alpine:1.1.0
+docker run -d -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 -v /path/to/configs/:/config -v /path/to/share/:/shared --name samba twatzl/samba-alpine
 docker start samba
 ```
 
 To have the container start when the host boots, add docker's restart policy:
 ```shell
-docker create --restart=always -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 -v /path/to/share/:/shared --name samba pwntr/samba-alpine
+docker create --restart=always -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 -v /path/to/share/:/shared --name samba twatzl/samba-alpine
 docker start samba
 ```
 
@@ -93,7 +80,7 @@ Not yet implemented
 Multiple shares can be used as shown in the following command.
 
 ```shell
-docker create --network host -v /path/to/configs/:/config -v /path/to/share/A/:/shares/shareA -v /path/to/share/B/:/shares/shareB --name samba samba-alpine:1.1.0
+docker create --network host -v /path/to/configs/:/config -v /path/to/share/A/:/shares/shareA -v /path/to/share/B/:/shares/shareB --name samba twatzl/samba-alpine
 docker start samba
 ```
 
