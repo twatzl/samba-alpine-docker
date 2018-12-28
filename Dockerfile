@@ -9,9 +9,6 @@ RUN apk --no-cache upgrade && apk --no-cache add samba samba-common-tools superv
 # create a dir for the config and the share
 RUN mkdir /config /shared
 
-# copy config files from project folder to get a default config going for samba and supervisord
-COPY *.conf /config/
-
 # volume mappings
 VOLUME /config /shared
 
