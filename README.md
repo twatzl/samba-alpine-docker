@@ -13,37 +13,52 @@ Mapping the ports alone is likely not sufficient for proper discovery as the pro
 
 ### Run
 
-First copy the content of the **config** directory into the config directory you will use.
+First create a default config using the following commands:
 
-Quick start for the impatient (discovery on your network will work fine). With your own smb.conf and supervisord.conf configs:
 ```shell
-docker create --network host -v /path/to/configs/:/config -v /path/to/share/:/shared --name samba twatzl/samba-alpine
-docker start samba
+SMB_CONFIG_DIR="/path/to/your/config/dir/"
+docker run --rm -v $SMB_CONFIG_DIR:/config:Z samba-alpine:1.1.1 /scripts/createDefaultConfig.sh
+```
+
+Quick start for the impatient (discovery on your network will work fine).
+With your own smb.conf and supervisord.conf configs:
+```shell
+docker create --network host \
+-v $SMB_CONFIG_DIR:/config \
+-v $SMB_CONFIG_DIR/etc/samba:/etc/samba \
+-v /path/to/share/:/shares/data/ \
+--name samba-server twatzl/samba-alpine
+docker start samba-server
 ```
 
 Supplying port mappings only instead of --network=host might be subject to the limtations outlined above
 ```shell
-docker run -d -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 -v /path/to/configs/:/config -v /path/to/share/:/shared --name samba twatzl/samba-alpine
+docker run -d -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 \
+-v $SMB_CONFIG_DIR:/config \
+-v $SMB_CONFIG_DIR/etc/samba:/etc/samba \
+-v /path/to/share/:/shares/data/ \
+--name samba-server twatzl/samba-alpine
 docker start samba
 ```
 
-To have the container start when the host boots, add docker's restart policy:
-```shell
-docker create --restart=always -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 -v /path/to/share/:/shared --name samba twatzl/samba-alpine
-docker start samba
-```
+To have the container start when the host boots, use docker's restart policy.
 
 ### Update Container
 
 You have to manually update the container by dumping it and building it again. 
 Note that you then have to add the users again using the scripts provided.
 
-## Add new User
+## User Management
 
-For adding a new user which has no user mapped on the host, you can use the `scripts/addUser.sh` script.
+For now only manual user management using scripts is supported.
+There might be a section on better user management in the future.
 
-```
-sh addUser.sh <CONTAINER> <USERNAME>
+### Add new User
+
+For adding a new user which has no user mapped on the host, you can use the `scripts/addUser.sh` script, however it is generally better to also have the user on the host.
+
+```shell
+docker exec -it samba-server /scripts/addUser.sh <username>
 ``` 
 
 In order to add a user which also exists on the host use the `scripts/addIdUser.sh` script. This is basically the way to go.
@@ -63,25 +78,38 @@ id -g someuser
 and finally create the user in the container
 
 ```shell
-sh addIdUser.sh <UID> <GID> <CONTAINER> <USERNAME> 
+docker exec -it samba-server /scripts/addIdUser.sh <uid> <gid> <username>
 ```
 (Note: the order of the parameters is changed, so you do not accidentally call the wrong script)
 
-## Change User PW
+**IMPORTANT NOTE: Whenever you delete the container you have to do the last step again.**
+
+### Change User PW
 
 The password of a user can be changed using the script `scripts/changePW.sh`.
 
-## Remove User
+```shell
+docker exec -it samba-server /scripts/changePW.sh <username>
+```
+
+### Remove User
 
 Not yet implemented
+
+Workaround: dump the container and create it new, then all the users will be gone.
 
 ## Multiple Shares and Adding Shares
 
 Multiple shares can be used as shown in the following command.
 
 ```shell
-docker create --network host -v /path/to/configs/:/config -v /path/to/share/A/:/shares/shareA -v /path/to/share/B/:/shares/shareB --name samba twatzl/samba-alpine
-docker start samba
+docker create -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 \
+-v /home/twatzl/data/samba/:/config:Z \
+-v /home/twatzl/data/samba/etc/samba:/etc/samba:Z \
+-v /path/to/share/A/:/shares/shareA \
+-v /path/to/share/B/:/shares/shareB \
+--name samba-server twatzl/samba-alpine
+docker start samba-server
 ```
 
 In order to add shares, just dump the container with `docker container rm samba` and create it new with all the shares you need.
