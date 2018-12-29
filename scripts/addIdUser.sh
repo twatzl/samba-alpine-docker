@@ -14,4 +14,4 @@ addgroup -g $varGID $USERNAME
 adduser -u $varUID -D -H -G $USERNAME -s /bin/false $USERNAME
 
 # create a samba user matching our user from above
-smbpasswd -a -c /config/smb.conf $USERNAME
+smbpasswd -a $USERNAME

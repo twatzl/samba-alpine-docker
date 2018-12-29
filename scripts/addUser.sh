@@ -12,4 +12,4 @@ addgroup $USERNAME
 adduser -D -H -G $USERNAME -s /bin/false $USERNAME
 
 # create a samba user matching our user from above
-smbpasswd -a -c /config/smb.conf $USERNAME
+smbpasswd -a $USERNAME
