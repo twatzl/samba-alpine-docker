@@ -8,4 +8,4 @@ fi
 USERNAME=$1
 
 # calling the same code as when creating a user allows to change its password
-docker exec -it $CONTAINER smbpasswd -a -c /config/smb.conf $USERNAME
+smbpasswd -a -c /config/smb.conf $USERNAME
