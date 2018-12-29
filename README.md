@@ -104,8 +104,8 @@ Multiple shares can be used as shown in the following command.
 
 ```shell
 docker create -p 137:137/udp -p 138:138/udp -p 139:139 -p 445:445 \
--v /home/twatzl/data/samba/:/config:Z \
--v /home/twatzl/data/samba/etc/samba:/etc/samba:Z \
+-v $SMB_CONFIG_DIR:/config:Z \
+-v $SMB_CONFIG_DIR/etc/samba:/etc/samba:Z \
 -v /path/to/share/A/:/shares/shareA \
 -v /path/to/share/B/:/shares/shareB \
 --name samba-server twatzl/samba-alpine
