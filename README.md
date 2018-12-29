@@ -126,6 +126,28 @@ In order to fix this use the following parameters for volumes.
 
 See also: https://stackoverflow.com/questions/24288616/permission-denied-on-accessing-host-directory-in-docker
 
+## Debugging Issues
+
+There a few ways which can help debugging any issues.
+
+First have a look at the docker logs with
+
+```shell
+docker logs samba-server
+```
+
+For opening a shell in the container you can use
+
+```shell
+docker exec -it samba-server /bin/ash
+```
+
+To check which shares are visible from another computer use
+
+```shell
+smbclient -L <ip> -U <username>
+```
+
 ## This docker container is not good because whatever
 
 I know. It is not great. It's by no means a perfect solution, but it does the job. If you have a better solution for any of the topics or want to add additional functionality or report errors I would be very happy to discuss them. I could not find anything better on the net.
