@@ -17,7 +17,7 @@ First create a default config using the following commands:
 
 ```shell
 SMB_CONFIG_DIR="/path/to/your/config/dir/"
-docker run --rm -v $SMB_CONFIG_DIR:/config:Z samba-alpine:1.1.1 /scripts/createDefaultConfig.sh
+docker run --rm -v $SMB_CONFIG_DIR:/config:Z twatzl/samba-alpine /scripts/createDefaultConfig.sh
 ```
 
 Quick start for the impatient (discovery on your network will work fine).
